@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="styles.css"> <!-- 引用外部CSS文件 -->
+</head>
+<body>
+<div class="container">
+    <h1>用户登录</h1>
+    <form id="loginForm" novalidate>
+        <div class="form-group">
+            <label for="email">邮箱：</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">密码：</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">登录</button>
+        <div id="errorMessage" class="error-message"></div>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // 阻止默认的表单提交行为
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/Authorize/login', { // 修改为你的登录接口地址
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const token = data.token;
+                localStorage.setItem('token', token); // 将 token 存储在本地存储中
+                window.location.href = '/protected'; // 跳转到受保护的页面
+            } else {
+                const errorData = await response.json();
+                errorMessage.textContent = errorData.message; // 显示错误信息
+                errorMessage.classList.add('visible'); // 显示错误信息框
+            }
+        } catch (error) {
+            errorMessage.textContent = '登录过程中发生错误';
+            errorMessage.classList.add('visible'); // 显示错误信息框
+        }
+    });
+</script>
+</body>
+</html>
