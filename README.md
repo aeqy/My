@@ -1,4 +1,28 @@
-好的，下面是如何使用`dotnet`命令行工具搭建一个使用EF Core的项目，项目名称为MyCc，并将`Core`替换为`Domain`。我们将使用GUID作为实体的主键。
+
+## Clean Architecture
+
+#### 数据库连接说明 
+
+```base
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Username=postgres;Password=密码;Database=PGSql数据库名称"
+  },
+
+  "Jwt": {
+    "Key": "KzTbK0s0PdHh2AsZWs00IQ=-", 
+    "Issuer": "yourdomain.com",
+    "Audience": "yourclient.com"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
 
 ### 使用`dotnet`命令搭建项目
 

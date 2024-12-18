@@ -16,6 +16,7 @@ public class MyDbContext(DbContextOptions<MyDbContext> options)
     public DbSet<OpenIddictEntityFrameworkCoreToken> Tokens { get; set; }
     
   
+    public DbSet<Account> Accounts { get; set;}
     protected override void OnModelCreating(ModelBuilder model)
     {
         base.OnModelCreating(model);

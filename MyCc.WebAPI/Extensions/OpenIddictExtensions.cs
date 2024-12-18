@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyCc.Infrastructure.Data;
 using OpenIddict.Abstractions;
-using OpenIddict.Core;
 
 namespace MyCc.WebAPI.Extensions;
 
@@ -27,9 +26,10 @@ public static class OpenIddictExtensions
                 options.UseEntityFrameworkCore()
                     .UseDbContext<MyDbContext>(); // 指定要使用的 DbContext 类型
                 
+
                 // 显式注册所有管理器
-                
-                
+
+
                 // 启用 Quartz.NET 集成用于调度后台任务，例如清理过期令牌（如果需要）。
                 // options.UseQuartz();
             })
@@ -61,6 +61,31 @@ public static class OpenIddictExtensions
 
                 // 禁用范围验证以支持动态范围（可选，仅在理解安全影响时使用）。
                 // options.DisableScopeValidation();
+                
+                
+
+                // 如果你需要支持刷新令牌，请启用它。
+                options.AllowRefreshTokenFlow();
+
+                // 注册应用程序类型。
+                options.RegisterScopes("openid", "profile", "offline_access");
+
+                // // 添加临时加密密钥（仅用于开发环境）
+                // if (Environment.IsDevelopment())
+                // {
+                    options.AddEphemeralEncryptionKey();
+                    options.AddEphemeralSigningKey();
+                // }
+                // else
+                // {
+                //     // 在生产环境中，你应该使用持久化的加密证书。
+                //     var certificate = new X509Certificate2("path/to/certificate.pfx", "password");
+                //     options.AddEncryptionCertificate(certificate);
+                //     options.AddSigningCertificate(certificate);
+                // }
+
+                // 允许来自特定客户端的请求。
+                options.AcceptAnonymousClients();
             })
 
             // 注册 OpenIddict 验证组件。

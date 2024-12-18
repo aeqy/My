@@ -1,4 +1,5 @@
 using MyCc.WebAPI.Extensions;
+using MyCc.WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,8 @@ builder.Services.AddCors(options =>
 // 添加OpenIddict服务
 builder.Services.AddMyCcOpenIddictServer();
 
+builder.Services.AddJwtAuthentication(builder.Configuration); // 添加JWT认证
+builder.Services.AddAuthorization(); // 添加授权服务
 var app = builder.Build();
 
 // 调用扩展方法以初始化应用程序
@@ -40,13 +43,19 @@ await app.InitializeApplicationAsync();
 if (app.Environment.IsDevelopment())
 {
     // app.MapOpenApi();// 启用Swagger
-    app.UseSwaggerDocumentation();  // 启用Swagger
+    app.UseSwaggerDocumentation(); // 启用Swagger
 }
 
-app.UseDefaultFiles();// 使用默认文件中间件
-app.UseStaticFiles();// 使用静态文件中间件
+//所有的未处理异常都会被中间件捕获并记录日志，并返回统一的错误响应
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseRouting();   // 启用路由
+app.UseDefaultFiles(); // 使用默认文件中间件
+app.UseStaticFiles(); // 使用静态文件中间件
+
+app.UseAuthentication(); // 启用身份验证中间件
+app.UseAuthorization(); // 启用授权中间件
+app.MapControllers(); // 启用控制器
+app.UseRouting(); // 启用路由
 app.UseCors("AllowAll"); // 启用跨域
-app.UseHttpsRedirection();  // 启用HTTPS重定向
-app.Run();  // 启动应用程序
+app.UseHttpsRedirection(); // 启用HTTPS重定向
+app.Run(); // 启动应用程序

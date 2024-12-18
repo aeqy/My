@@ -1,22 +1,70 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MyCc.Application.DTOs;
+using MyCc.Application.Services;
 
 namespace MyCc.WebAPI.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class AccountController : ControllerBase
+[Route("api/[controller]")] // 设置路由为 /api/Account
+public class AccountController(UserManager<IdentityUser<Guid>> userManager, SignInManager<IdentityUser<Guid>> signInManager) : ControllerBase
 {
+    // 构造函数注入 AccountService
 
-    private readonly Random _random;
-    public AccountController()
+    /// <summary>
+    /// 用户注册接口。
+    /// </summary>
+    /// <param name="email">用户邮箱。</param>
+    /// <param name="password">用户密码。</param>
+    /// <returns>注册结果。</returns>
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
-        _random = new Random();
+        var user = new IdentityUser<Guid> { UserName = model.Email, Email = model.Email };
+        var result = await userManager.CreateAsync(user, model.Password);
+
+
+        if (result.Succeeded)
+        {
+            return Ok(new { message = "注册成功" });
+        }
+        // else
+        // {
+        //     // 处理注册失败的情况，返回错误信息
+        //     return BadRequest(new { message = "注册失败", errors = result.Errors });
+        // }
+        
+        return BadRequest(result.Errors);
     }
-    // GET: api/RandomNumber
-    [HttpGet]
-    public IActionResult GetRandomNumber()
+
+
+    /// <summary>
+    /// 用户登录接口。
+    /// </summary>
+    /// <param name="model">包含用户邮箱和密码的登录数据传输对象。</param>
+    /// <returns>登录结果。</returns>
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        int randomNumber = _random.Next(1, 101); // 生成1到100之间的随机数
-        return Ok(new { Number = randomNumber });
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null || !await userManager.CheckPasswordAsync(user, model.Password))
+        {
+            return Unauthorized("登录失败，用户名或密码错误。");
+        }
+
+        // 创建 ClaimsPrincipal 表示用户
+        var principal = await signInManager.CreateUserPrincipalAsync(user);
+
+        // 签发身份验证 Cookie
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal
+            // new AuthenticationProperties { IsPersistent = model.RememberMe } // 如果有 RememberMe 字段的话
+        );
+
+        // 返回成功的响应
+        return Ok(new { Message = "登录成功" });
     }
 }
