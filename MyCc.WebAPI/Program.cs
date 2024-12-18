@@ -21,12 +21,21 @@ builder.Services.AddCors(options =>
     // ReSharper disable once VariableHidesOuterVariable
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.AllowAnyOrigin()    // 允许所有来源
-            .AllowAnyMethod()    // 允许所有HTTP方法
-            .AllowAnyHeader();   // 允许所有请求头
+        builder.AllowAnyOrigin() // 允许所有来源
+            .AllowAnyMethod() // 允许所有HTTP方法
+            .AllowAnyHeader(); // 允许所有请求头
+        // .AllowCredentials(); // 允许携带凭据
+        // .DisallowCredentials() // 不允许携带凭据
     });
 });
+
+// 添加OpenIddict服务
+builder.Services.AddMyCcOpenIddictServer();
+
 var app = builder.Build();
+
+// 调用扩展方法以初始化应用程序
+await app.InitializeApplicationAsync();
 
 if (app.Environment.IsDevelopment())
 {
