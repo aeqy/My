@@ -64,7 +64,8 @@ public static class OpenIddictExtensions
                     .SetEndSessionEndpointUris("/connect/logout");
 
                 // 使用 ASP.NET Core 内置的数据保护 API 来保护令牌。
-                options.UseAspNetCore();
+                options.UseAspNetCore()
+                    .EnableTokenEndpointPassthrough();  // 将令牌终结点路由重定向到授权终结点
 
                 // 禁用范围验证以支持动态范围（可选，仅在理解安全影响时使用）。
                 // options.DisableScopeValidation();

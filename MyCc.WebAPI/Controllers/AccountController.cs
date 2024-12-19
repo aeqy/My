@@ -24,19 +24,15 @@ public class AccountController(UserManager<IdentityUser<Guid>> userManager, Sign
     {
         var user = new IdentityUser<Guid> { UserName = model.Email, Email = model.Email };
         var result = await userManager.CreateAsync(user, model.Password);
-
-
+        
         if (result.Succeeded)
         {
             return Ok(new { message = "注册成功" });
         }
-        // else
-        // {
-        //     // 处理注册失败的情况，返回错误信息
-        //     return BadRequest(new { message = "注册失败", errors = result.Errors });
-        // }
         
-        return BadRequest(result.Errors);
+        // 返回详细的错误信息
+        var errors = result.Errors.Select(e => e.Description).ToList();
+        return BadRequest(new { Errors = errors });
     }
 
 
@@ -59,7 +55,7 @@ public class AccountController(UserManager<IdentityUser<Guid>> userManager, Sign
 
         // 签发身份验证 Cookie
         await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
+            IdentityConstants.ApplicationScheme,
             principal
             // new AuthenticationProperties { IsPersistent = model.RememberMe } // 如果有 RememberMe 字段的话
         );
