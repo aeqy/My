@@ -10,7 +10,14 @@ public static class OpenIddictExtensions
     public static IServiceCollection AddMyCcOpenIddictServer(this IServiceCollection service)
     {
         // 添加 Identity (如果需要)
-        service.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()
+        service.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+            {
+                options.Password.RequireDigit = true; // 要求密码包含数字
+                options.Password.RequireLowercase = true; // 要求密码包含小写字母
+                options.Password.RequireUppercase = true; // 要求密码包含大写字母
+                options.Password.RequireNonAlphanumeric = true; // 要求密码包含非字母数字字符
+                options.Password.RequiredLength = 6; // 密码最小长度
+            })
             .AddEntityFrameworkStores<MyDbContext>()
             .AddDefaultTokenProviders();
 
