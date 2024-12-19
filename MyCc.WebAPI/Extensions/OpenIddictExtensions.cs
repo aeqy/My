@@ -45,13 +45,9 @@ public static class OpenIddictExtensions
             .AddServer(options =>
             {
                 // 启用授权码流，这通常用于 Web 应用程序。
-                options.AllowAuthorizationCodeFlow();
-
-                // 启用客户端凭据流，用于机器对机器通信。
-                options.AllowClientCredentialsFlow();
-
-                // 启用刷新令牌流，允许客户端在不与用户交互的情况下请求新的访问令牌。
-                options.AllowRefreshTokenFlow();
+                options.AllowAuthorizationCodeFlow() // 启用授权码流
+                    .AllowRefreshTokenFlow() // 启用刷新令牌流
+                    .AllowClientCredentialsFlow(); // 启用客户端凭据流
 
                 // 设置由服务器签发的不同类型令牌的有效期。
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(30))
@@ -65,35 +61,27 @@ public static class OpenIddictExtensions
 
                 // 使用 ASP.NET Core 内置的数据保护 API 来保护令牌。
                 options.UseAspNetCore()
-                    .EnableTokenEndpointPassthrough();  // 将令牌终结点路由重定向到授权终结点
+                    .EnableTokenEndpointPassthrough() // 将令牌终结点路由重定向到授权终结点
+                    .EnableAuthorizationEndpointPassthrough(); // 将授权终结点路由重定向到授权终结点
 
                 // 禁用范围验证以支持动态范围（可选，仅在理解安全影响时使用）。
                 // options.DisableScopeValidation();
-                
-                
-
-                // 如果你需要支持刷新令牌，请启用它。
-                options.AllowRefreshTokenFlow();
 
                 // 注册应用程序类型。
-                options.RegisterScopes("openid", "profile", "offline_access");
+                options.RegisterScopes(
+                    OpenIddictConstants.Scopes.Email, // 电子邮件范围
+                    OpenIddictConstants.Scopes.OfflineAccess, // 离线访问范围,会哟一个自动刷新的令牌
+                    OpenIddictConstants.Scopes.Phone, // 电话范围
+                    OpenIddictConstants.Scopes.Roles, // 角色范围
+                    OpenIddictConstants.Scopes.OpenId, // OpenID Connect 范围
+                    OpenIddictConstants.Scopes.Address, // 地址范围
+                    OpenIddictConstants.Scopes.Profile); // 个人资料范围
 
-                // // 添加临时加密密钥（仅用于开发环境）
-                // if (Environment.IsDevelopment())
-                // {
-                    options.AddEphemeralEncryptionKey();
-                    options.AddEphemeralSigningKey();
-                // }
-                // else
-                // {
-                //     // 在生产环境中，你应该使用持久化的加密证书。
-                //     var certificate = new X509Certificate2("path/to/certificate.pfx", "password");
-                //     options.AddEncryptionCertificate(certificate);
-                //     options.AddSigningCertificate(certificate);
-                // }
+                options.AddDevelopmentEncryptionCertificate() // 添加临时加密证书（仅用于开发环境）
+                    .AddDevelopmentSigningCertificate(); // 添加临时
 
                 // 允许来自特定客户端的请求。
-                options.AcceptAnonymousClients();
+                options.AcceptAnonymousClients(); // 允许匿名客户端
             })
 
             // 注册 OpenIddict 验证组件。
@@ -166,5 +154,4 @@ public static class OpenIddictExtensions
             });
         }
     }
-
-    }
+}

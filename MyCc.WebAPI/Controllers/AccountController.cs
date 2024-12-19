@@ -63,4 +63,15 @@ public class AccountController(UserManager<IdentityUser<Guid>> userManager, Sign
         // 返回成功的响应
         return Ok(new { Message = "登录成功" });
     }
+    
+    /// <summary>
+    /// 用户登出接口。
+    /// </summary>
+    /// <returns>登出结果。</returns>
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+        return Ok(new { Message = "登出成功" });
+    }
 }
