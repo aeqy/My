@@ -10,12 +10,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Handlers\" />
-    <Folder Include="Queries\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

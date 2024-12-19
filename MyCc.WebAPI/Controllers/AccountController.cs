@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyCc.Application.DTOs;
-using MyCc.Application.Services;
 
 namespace MyCc.WebAPI.Controllers;
 
@@ -16,8 +14,6 @@ public class AccountController(UserManager<IdentityUser<Guid>> userManager, Sign
     /// <summary>
     /// 用户注册接口。
     /// </summary>
-    /// <param name="email">用户邮箱。</param>
-    /// <param name="password">用户密码。</param>
     /// <returns>注册结果。</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto model)

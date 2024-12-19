@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MyCc.Domain.Accounts;
 using OpenIddict.EntityFrameworkCore.Models;
 
 namespace MyCc.Infrastructure.Data;
@@ -16,7 +15,6 @@ public class MyDbContext(DbContextOptions<MyDbContext> options)
     public DbSet<OpenIddictEntityFrameworkCoreToken> Tokens { get; set; }
     
   
-    public DbSet<Account> Accounts { get; set;}
     protected override void OnModelCreating(ModelBuilder model)
     {
         base.OnModelCreating(model);
